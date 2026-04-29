@@ -314,9 +314,22 @@ public class ApplicationServiceImpl extends AbstractRemoteServiceServlet impleme
 
     @Override
     public String updateResource(Resource resource) throws VipException {
-        resourceBusiness.update(resource);
-
-        return groupBusiness.getWarningSameVisibility(resource.getGroupsNames());
+        // Log the attempt in the terminal
+        System.out.println("[DEBUG] Attempting to update resource: " + resource.getName());
+        try {
+            resourceBusiness.update(resource);
+            
+            System.out.println("[OK] Resource updated successfully: " + resource.getName());
+            
+            return groupBusiness.getWarningSameVisibility(resource.getGroupsNames());
+            
+        } catch (Exception e) {
+            System.err.println("[ERROR] Update failed for resource '" + resource.getName() + "': " + e.getMessage());
+            
+            e.printStackTrace();
+            
+            throw new VipException("Server error during update: " + e.getMessage());
+        }
     }
 
     @Override
