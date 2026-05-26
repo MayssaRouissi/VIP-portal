@@ -314,7 +314,6 @@ public class ApplicationServiceImpl extends AbstractRemoteServiceServlet impleme
 
     @Override
     public String updateResource(Resource resource) throws VipException {
-        // Log the attempt in the terminal
         System.out.println("[DEBUG] Attempting to update resource: " + resource.getName());
         try {
             resourceBusiness.update(resource);
