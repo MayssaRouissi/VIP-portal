@@ -26,7 +26,6 @@ public class Task implements IsSerializable {
     private String[] parameters;
     private int minorStatus;
     private int jobID;
-    private String executionTimeSlurm;
 
     public Task() {
     }
@@ -210,9 +209,6 @@ public class Task implements IsSerializable {
     }
     public String getExitMessage() { return GaswExitCode.fromCode(this.exitCode).getMessage(); }
     
-    public String getExecutionTimeSlurm() {return executionTimeSlurm;}
-
-    public void setExecutionTimeSlurm(String executionTimeSlurm) {
-        this.executionTimeSlurm = executionTimeSlurm;
-    }
+ 
+    
 }

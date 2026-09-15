@@ -44,7 +44,7 @@ public class SimulationData extends AbstractJobData implements SimulationDAO {
         try {
             Statement stat = connection.createStatement();
             ResultSet rs = stat.executeQuery("SELECT "
-                    + "invocation_id, status, command, execution_time_slurm "
+                    + "invocation_id, status, command "
                     + "FROM Jobs "
                     + "ORDER BY creation");
 
@@ -53,7 +53,6 @@ public class SimulationData extends AbstractJobData implements SimulationDAO {
                         TaskStatus.valueOf(rs.getString("status")),
                         rs.getString("command"));
 
-                task.setExecutionTimeSlurm(rs.getString("execution_time_slurm"));
                 list.add(task);
             }
             stat.close();
@@ -210,7 +209,7 @@ public class SimulationData extends AbstractJobData implements SimulationDAO {
             Statement stat = connection.createStatement();
             ResultSet rs = stat.executeQuery(
                     "SELECT j.id, j.invocation_id, creation, status, command, file_name, exit_code, " +
-                            "node_site, node_name, parameters, ms , execution_time_slurm " +
+                            "node_site, node_name, parameters, ms " +
                             "FROM Jobs AS j " +
                             "LEFT JOIN ( " +
                             "  SELECT jm.id, minor_status AS ms FROM JobsMinorStatus AS jm " +
@@ -235,7 +234,6 @@ public class SimulationData extends AbstractJobData implements SimulationDAO {
                     rs.getString("node_name"), minorStatus,
                     rs.getString("parameters").split(" "));
 
-            task.setExecutionTimeSlurm(rs.getString("execution_time_slurm"));
 
            list.add(task);
             }
@@ -251,6 +249,29 @@ public class SimulationData extends AbstractJobData implements SimulationDAO {
             close(logger);
         }
         return list;
+    }
+    
+    @Override
+    public Map<String, String> getJobMetrics(String jobId) throws DAOException {
+        Map<String, String> metrics = new HashMap<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement(
+                    "SELECT metric_name, metric_value FROM Job_Metrics WHERE job_id = ?");
+            ps.setString(1, jobId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                metrics.put(rs.getString("metric_name"), rs.getString("metric_value"));
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            if (!ex.getMessage().contains("Table \"JOB_METRICS\" not found")) {
+                logger.error("Error getting metrics for job {}", jobId, ex);
+                throw new DAOException(ex);
+            }
+        } finally {
+            close(logger);
+        }
+        return metrics;
     }
 
     @Override
