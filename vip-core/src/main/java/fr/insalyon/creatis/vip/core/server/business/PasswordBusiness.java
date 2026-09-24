@@ -53,7 +53,7 @@ public class PasswordBusiness extends CommonBusiness {
 
             if (!currentPasswordCorrect) {
                 logger.error("Wrong current password for {}", user.getEmail());
-                throw new VipException("Wrong current password.");
+                throw new VipException("The current password mismatch.");
             }
 
             String newPasswordHash = hash(newPassword);
