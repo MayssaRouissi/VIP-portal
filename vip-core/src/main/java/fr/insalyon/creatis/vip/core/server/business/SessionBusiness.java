@@ -91,6 +91,10 @@ public class SessionBusiness {
         cookie.setHttpOnly(httpOnly);
         cookie.setSecure(isSecure);
         cookie.setMaxAge(maxAge);
+        // GDPR / CNIL: these cookies are strictly necessary (authentication, security)
+        // and therefore exempt from consent. SameSite=Lax limits them to first-party use
+        // while still allowing the top-level redirect back from the OIDC provider (EGI Check-in).
+        cookie.setAttribute("SameSite", "Lax");
         logger.debug("Creating {} cookie, secured : {}, httpOnly : {}", name, isSecure, httpOnly);
         return cookie;
     }
